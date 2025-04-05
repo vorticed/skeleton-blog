@@ -1,0 +1,25 @@
+{#- Template for the footer. -#}
+{% if footer.model == 'vertical' %}
+<footer 
+    class="{{theme.is.light}} {{theme.light.display.flex}} footer" style="height: {{footer.style.div.height}}; background-color: {{footer.style.div.background.light}}; border-top: {{footer.style.div.border.top.light}}; border-bottom: {{footer.style.div.border.bottom.light}}; align-items: {{footer.style.div.align.vertical}};">
+    <div style="text-align: {{footer.style.div.align.horizontal}}; margin: {{footer.style.div.margin}}; width: 100%; display: inline;">
+    {%- for file in footer_files %}
+        <div>
+            <span style="font-family: {{footer.style.entry.font.family}}; font-size: {{footer.style.entry.font.size}}; font-weight: {{footer.style.entry.font.weight}}; text-decoration: {{footer.style.entry.font.decoration}}; color: {{footer.style.entry.font.color.light}}; background: {{footer.style.entry.font.background.light}}; margin: {{footer.style.entry.margin}};">{{ file }}</span>
+        </div>
+    {%- endfor %}
+    </div>
+</footer>
+{% endif %}
+{% if footer.model == 'horizontal' %}
+<footer
+    class="{{theme.is.light}} {{theme.light.display.flex}} footer" style="height: {{footer.style.div.height}}; background-color: {{footer.style.div.background.light}}; border-top: {{footer.style.div.border.top.light}}; border-bottom: {{footer.style.div.border.bottom.light}}; align-items: {{footer.style.div.align.horizontal}};">
+    <div style="text-align: {{footer.style.div.align.horizontal}}; margin-left: auto; margin-right: auto; display: flex;">
+    {%- for file,details in footer_files.items() %}
+        <div>
+            <span style="font-family: {{footer.style.entry.font.family}}; font-size: {{footer.style.entry.font.size}}; font-weight: {{footer.style.entry.font.weight}}; text-decoration: {{footer.style.entry.font.decoration}}; color: {{footer.style.entry.font.color.light}}; background: {{footer.style.entry.font.background.light}}; margin: {{footer.style.entry.margin}};"><a href="{{ details['path']['url'].replace('content/', '')}}">{{ file }}</a></span>
+        </div>
+    {%- endfor %}
+    </div>
+</footer>
+{% endif %}

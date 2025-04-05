@@ -1,0 +1,17 @@
+.post-container {
+    margin-top: 50px;
+    width: 100%;
+    display: block;
+    align-items: center
+}
+
+.post-image {
+    margin-bottom: 50px;
+}
+
+.post-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+

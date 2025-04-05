@@ -1,0 +1,13 @@
+<div class="share">
+    <p style="font-family: {{share.text.font.family}}; font-size: {{share.text.font.size}}; font-style: {{share.text.font.style}}; font-weight: {{share.text.font.weight}}; text-decoration: {{share.text.decoration}}; margin: {{share.text.margin}}">{{share.text.content}}</p>
+    <div class="share-icon-div" style="display: {{ share.style.display }};">
+        {% for platform, details in share['entries'].items() %}
+            {% if frontmatter[platform] %}
+                <a href="{{ details['baseurl'] }}{{ frontmatter.url }}">
+                    <img src="{{ pathto(details['icon']['light'], 1) }}" class="share-icon {{theme.is.light}}" style="width: {{ share.style.width }}; margin: {{ share.style.margin }};" alt="{{ platform }}">
+                    <img src="{{ pathto(details['icon']['dark'], 1) }}" class="share-icon {{theme.is.dark}}" style="width: {{ share.style.width }}; margin: {{ share.style.margin }};" alt="{{ platform }}">
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

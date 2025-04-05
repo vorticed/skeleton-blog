@@ -1,0 +1,10 @@
+sphinx
+sphinx-autobuild
+sphinxawesome_theme
+myst-parser
+pytz
+python-dotenv
+requests
+git+https://github.com/pythonalta/sphinx-frontmatter
+git+https://github.com/pythonalta/sphinx-collector
+git+https://github.com/pythonalta/sphinx-slugger

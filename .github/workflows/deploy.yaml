@@ -1,0 +1,107 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Sphinx
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Sphinx documents
+        run: |
+          sphinx-build -b html ./content ./dist -c ./src
+
+      - name: Upload dist directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/html
+
+      - name: Upload sh directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: sh
+          path: .github/sh
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      DOMAIN: "<domain>"
+      DEPLOY_DIR: "nic/<domain>"
+      SERVER_USER: "<user>"
+      PUBLIC_IP: "<ip>"
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_NIC_1 }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download dist directory
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/html 
+
+      - name: Download sh directory
+        uses: actions/download-artifact@v4
+        with:
+          name: sh
+          path: .github/sh
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_ed25519
+          ssh-keyscan -H $PUBLIC_IP >> ~/.ssh/known_hosts
+
+      - name: Remove old temporary files
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SERVER_USER@$PUBLIC_IP <<EOF
+            set -e
+            if [ -d /home/$SERVER_USER/tmp/${DOMAIN} ]; then
+              sudo rm -r /home/$SERVER_USER/tmp/${DOMAIN}
+            fi
+          EOF
+
+      - name: Prepare Remote Directory
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SERVER_USER@$PUBLIC_IP <<EOF
+            set -e
+            sudo mkdir -p /home/$SERVER_USER/tmp/$DOMAIN
+            sudo mkdir -p /home/$SERVER_USER/tmp/$DOMAIN/html
+            sudo mkdir -p /home/$SERVER_USER/tmp/$DOMAIN/nginx
+            sudo mkdir -p /home/$SERVER_USER/tmp/$DOMAIN/sh
+            sudo chown -R $SERVER_USER:$SERVER_USER /home/$SERVER_USER/tmp/$DOMAIN
+          EOF
+
+      - name: Deploy to temporary directory
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -r dist/* $SERVER_USER@$PUBLIC_IP:/home/$SERVER_USER/tmp/$DOMAIN/html
+
+      - name: Copy scripts
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 sh/* $SERVER_USER@$PUBLIC_IP:/home/$SERVER_USER/tmp/$DOMAIN/sh
+
+      - name: Execute deploy script
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SERVER_USER@$PUBLIC_IP "sudo DOMAIN=$DOMAIN DEPLOY_DIR=$DEPLOY_DIR SERVER_USER=$SERVER_USER bash /home/$SERVER_USER/tmp/$DOMAIN/sh/deploy.sh"

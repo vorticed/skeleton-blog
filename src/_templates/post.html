@@ -1,0 +1,39 @@
+{%- block content %}
+<div class="post-container">
+    {%- if frontmatter.category %}
+        <span class="post-category" style="font-family: {{ post.category.font.family }}; color: {{ post.category.font.color }}; font-size: {{ post.category.font.size }};  font-style: {{ post.category.font.style }}; font-weight: {{ post.category.font.weight }}; text-decoration: {{ post.category.font.decoration }}; margin: {{ post.category.margin }};">{{ frontmatter.category }}</span>
+    {%- endif %}
+    <h1 class="post-title" style="font-family: {{ post.title.font.family }}; color: {{ post.title.font.color }}; font-size: {{ post.title.font.size }};  font-style: {{ post.title.font.style }}; font-weight: {{ post.title.font.weight }}; text-decoration: {{ post.title.font.decoration }}; margin: {{ post.title.margin }};">{{ frontmatter.title }}</h1>
+    {%- if frontmatter.summary %}
+        <div class="post-summary" style="font-family: {{ post.summary.font.family }}; color: {{ post.summary.font.color }}; font-size: {{ post.summary.font.size }};  font-style: {{ post.summary.font.style }}; font-weight: {{ post.summary.font.weight }}; text-decoration: {{ post.summary.font.decoration }}; margin: {{ post.summary.margin }};">
+            <p>{{ frontmatter.summary}}</p>
+        </div>
+    {%- endif %}
+    {%- if frontmatter.author %}
+        <div class="post-author" style="font-family: {{ post.author.font.family }}; color: {{ post.author.font.color }}; font-size: {{ post.author.font.size }};  font-style: {{ post.author.font.style }}; font-weight: {{ post.author.font.weight }}; text-decoration: {{ post.author.font.decoration }}; margin: {{ post.author.margin }};">
+            <p>{{ frontmatter.author }}</p>
+        </div>
+    {%- endif %}
+    {%- if frontmatter.date %}
+        <div class="post-datetime">
+            <p>
+                <span class="post-date" style="font-family: {{ post.date.font.family }}; color: {{ post.date.font.color }}; font-size: {{ post.date.font.size }};  font-style: {{ post.date.font.style }}; font-weight: {{ post.date.font.weight }}; text-decoration: {{ post.date.font.decoration }}; margin: {{ post.date.margin }};">{{ frontmatter.date }}</span> 
+                {%- if frontmatter.time %}
+                    <span class="post-time" style="font-family: {{ post.time.font.family }}; color: {{ post.time.font.color }}; font-size: {{ post.time.font.size }};  font-style: {{ post.time.font.style }}; font-weight: {{ post.time.font.weight }}; text-decoration: {{ post.time.font.decoration }}; margin: {{ post.time.margin }};">{{ frontmatter.time }}</span> 
+                {% endif %} 
+            </p>
+        </div> 
+    {%- endif %}
+    {%- if frontmatter.url %}
+        {%- include "light/share.html" %}
+        {%- include "dark/share.html" %}
+    {%- endif %}
+    {%- if frontmatter.image %}
+        <div class="post-image" style="margin: {{ post.image.margin }};">
+          <img src="{{ pathto('_static/' ~ frontmatter.image, 1) }}" 
+          alt="{{ frontmatter.image }}">
+        </div>
+    {%- endif %} 
+{%- endblock %}
+
+
